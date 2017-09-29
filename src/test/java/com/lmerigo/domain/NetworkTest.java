@@ -13,7 +13,7 @@ public class NetworkTest {
 
 	// Messages
 	private static final String INVALID_NUMBER_OF_ELEMENTS_MESSAGE = "Network does not have the right number of elements";
-	private static final String THERE_SHOULD_NOT_HAVE_CONNECTIONS_MESSAGE = null;
+	private static final String THERE_SHOULD_NOT_HAVE_CONNECTIONS_MESSAGE = "Network should not have connections on initial state";
 
 	// The constructor should take a positive integer value indicating the
 	// number of elements in the set. Passing in an invalid value should throw an
