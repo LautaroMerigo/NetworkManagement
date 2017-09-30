@@ -132,6 +132,50 @@ public class NetworkTest {
 		assertTrue(network.query(1, 4));
 	}
 
+	
+	@Test
+	public void shouldWorkWithIndirectConnectionsLevelInverselyLevel1() {
+		Network network = new Network(A_VALID_NUMBER_OF_ELEMENTS);
+		network.connect(2, 1);
+		
+		assertTrue(network.query(2, 1));
+		assertTrue(network.query(1, 2));
+	}
+
+	
+	@Test
+	public void shouldWorkWithIndirectConnectionsInverselyLevel2() {
+		Network network = new Network(A_VALID_NUMBER_OF_ELEMENTS);
+		network.connect(2, 1);
+		network.connect(3, 2);
+		
+		assertTrue(network.query(1, 3));
+		assertTrue(network.query(3, 1));
+	}
+	
+	@Test
+	public void shouldWorkWithIndirectConnectionsInverselyLevel3() {
+		Network network = new Network(A_VALID_NUMBER_OF_ELEMENTS);
+		network.connect(2, 1);
+		network.connect(3, 2);
+		network.connect(4, 3);
+		
+		assertTrue(network.query(1, 4));
+		assertTrue(network.query(4, 1));
+	}
+
+	
+	@Test
+	public void shouldWorkWithIndirectConnectionsInCombinationLevel3() {
+		Network network = new Network(A_VALID_NUMBER_OF_ELEMENTS);
+		network.connect(1, 2);
+		network.connect(3, 2);
+		network.connect(3, 4);
+		
+		assertTrue(network.query(1, 4));
+		assertTrue(network.query(4, 1));
+	}
+
 	// Query fail cases
 	@Test(expected=IllegalArgumentException.class)
 	public void shouldFailOnQueryWithFirstIndexLessThanOne() {
