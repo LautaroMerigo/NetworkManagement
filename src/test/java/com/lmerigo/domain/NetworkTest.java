@@ -39,20 +39,13 @@ public class NetworkTest {
 		assertFalse(THERE_SHOULD_NOT_HAVE_CONNECTIONS_MESSAGE, network.isThereAtLeastOneConnection());
 	}
 
+	// PART 1: CONNECTION SCENARIOS
+	
 	// Happy path on connection.
 	@Test
 	public void shouldConnectRightWhenFirstIndexSmallerThanSecondIndex() {
 		Network network = new Network(A_VALID_NUMBER_OF_ELEMENTS);
 		network.connect(1, 2);
-		assertTrue(network.isDirectlyConnected(1, 2));
-		assertTrue(network.isDirectlyConnected(2, 1));
-	}
-
-	@Test
-	public void shouldConnectRightWhenFirstIndexGreaterThanSecondIndex() {
-		Network network = new Network(A_VALID_NUMBER_OF_ELEMENTS);
-		network.connect(2, 1);
-		assertTrue(network.isDirectlyConnected(2, 1));
 		assertTrue(network.isDirectlyConnected(1, 2));
 	}
 
@@ -60,20 +53,10 @@ public class NetworkTest {
 
 	// First index equals to number of elements
 	@Test
-	public void shouldConnectWhenFirstIndexEqualsToNumberOfElements() {
-		Network network = new Network(A_VALID_NUMBER_OF_ELEMENTS);
-		network.connect(A_VALID_NUMBER_OF_ELEMENTS, 1);
-		assertTrue(network.isDirectlyConnected(A_VALID_NUMBER_OF_ELEMENTS, 1));
-		assertTrue(network.isDirectlyConnected(1, A_VALID_NUMBER_OF_ELEMENTS));
-	}
-
-	// First index equals to number of elements
-	@Test
 	public void shouldConnectWhenSecondIndexEqualsToNumberOfElements() {
 		Network network = new Network(A_VALID_NUMBER_OF_ELEMENTS);
 		network.connect(1, A_VALID_NUMBER_OF_ELEMENTS);
 		assertTrue(network.isDirectlyConnected(1, A_VALID_NUMBER_OF_ELEMENTS));
-		assertTrue(network.isDirectlyConnected(A_VALID_NUMBER_OF_ELEMENTS, 1));
 	}
 
 	// Fail cases
@@ -104,12 +87,21 @@ public class NetworkTest {
 		network.connect(1, A_VALID_NUMBER_OF_ELEMENTS + 1);
 	}
 
+	@Test(expected = IllegalArgumentException.class)
+	public void shouldFailWhenFirstIndexGreaterThanSecondIndex() {
+		Network network = new Network(A_VALID_NUMBER_OF_ELEMENTS);
+		network.connect(2, 1);
+	}
+	
+	
+	// PART TWO: QUERY SCENARIOS
+	
 	// Indirect connections happy path
 	@Test
 	public void shouldWorkWithIndirectConnectionsLevel1() {
 		Network network = new Network(A_VALID_NUMBER_OF_ELEMENTS);
 		network.connect(1, 2);
-		
+
 		assertTrue(network.query(1, 2));
 	}
 
@@ -118,104 +110,59 @@ public class NetworkTest {
 		Network network = new Network(A_VALID_NUMBER_OF_ELEMENTS);
 		network.connect(1, 2);
 		network.connect(2, 3);
-		
+
 		assertTrue(network.query(1, 3));
 	}
-	
+
 	@Test
 	public void shouldWorkWithIndirectConnectionsLevel3() {
 		Network network = new Network(A_VALID_NUMBER_OF_ELEMENTS);
 		network.connect(1, 2);
 		network.connect(2, 3);
 		network.connect(3, 4);
-		
-		assertTrue(network.query(1, 4));
-	}
 
-	
-	@Test
-	public void shouldWorkWithIndirectConnectionsLevelInverselyLevel1() {
-		Network network = new Network(A_VALID_NUMBER_OF_ELEMENTS);
-		network.connect(2, 1);
-		
-		assertTrue(network.query(2, 1));
-		assertTrue(network.query(1, 2));
-	}
-
-	
-	@Test
-	public void shouldWorkWithIndirectConnectionsInverselyLevel2() {
-		Network network = new Network(A_VALID_NUMBER_OF_ELEMENTS);
-		network.connect(2, 1);
-		network.connect(3, 2);
-		
-		assertTrue(network.query(1, 3));
-		assertTrue(network.query(3, 1));
-	}
-	
-	@Test
-	public void shouldWorkWithIndirectConnectionsInverselyLevel3() {
-		Network network = new Network(A_VALID_NUMBER_OF_ELEMENTS);
-		network.connect(2, 1);
-		network.connect(3, 2);
-		network.connect(4, 3);
-		
 		assertTrue(network.query(1, 4));
-		assertTrue(network.query(4, 1));
-	}
-
-	
-	@Test
-	public void shouldWorkWithIndirectConnectionsInCombinationLevel3() {
-		Network network = new Network(A_VALID_NUMBER_OF_ELEMENTS);
-		network.connect(1, 2);
-		network.connect(3, 2);
-		network.connect(3, 4);
-		
-		assertTrue(network.query(1, 4));
-		assertTrue(network.query(4, 1));
 	}
 
 	// Query fail cases
-	@Test(expected=IllegalArgumentException.class)
+	@Test(expected = IllegalArgumentException.class)
 	public void shouldFailOnQueryWithFirstIndexLessThanOne() {
 		Network network = new Network(A_VALID_NUMBER_OF_ELEMENTS);
 		network.connect(1, 2);
 		network.connect(2, 3);
 		network.connect(3, 4);
-		
-		assertTrue(network.query(0, 4));
+
+		network.query(0, 4);
 	}
 
-
-	@Test(expected=IllegalArgumentException.class)
+	@Test(expected = IllegalArgumentException.class)
 	public void shouldFailOnQueryWithFirstIndexGreaterThanNumberOfElements() {
 		Network network = new Network(A_VALID_NUMBER_OF_ELEMENTS);
 		network.connect(1, 2);
 		network.connect(2, 3);
 		network.connect(3, 4);
-		
-		assertTrue(network.query(A_VALID_NUMBER_OF_ELEMENTS + 1, 4));
+
+		network.query(A_VALID_NUMBER_OF_ELEMENTS + 1, 4);
 	}
 
-	@Test(expected=IllegalArgumentException.class)
+	@Test(expected = IllegalArgumentException.class)
 	public void shouldFailOnQueryWithSecondIndexLessThanOne() {
 		Network network = new Network(A_VALID_NUMBER_OF_ELEMENTS);
 		network.connect(1, 2);
 		network.connect(2, 3);
 		network.connect(3, 4);
-		
-		assertTrue(network.query(4, 0));
+
+		network.query(4, 0);
 	}
 
-	@Test(expected=IllegalArgumentException.class)
+	@Test(expected = IllegalArgumentException.class)
 	public void shouldFailOnQueryWithSecondIndexGreaterThanNumberOfElements() {
 		Network network = new Network(A_VALID_NUMBER_OF_ELEMENTS);
 		network.connect(1, 2);
 		network.connect(2, 3);
 		network.connect(3, 4);
-		
-		assertTrue(network.query(4, A_VALID_NUMBER_OF_ELEMENTS + 1));
+
+		network.query(4, A_VALID_NUMBER_OF_ELEMENTS + 1);
 	}
 
 }

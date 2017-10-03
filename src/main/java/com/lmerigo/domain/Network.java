@@ -1,10 +1,13 @@
 package com.lmerigo.domain;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class Network {
 	private Boolean[][] graph;
+	private Map<Integer, Set<Integer>> connectedWith;
 
 	public Network(final Integer numberOfElements) {
 		if (numberOfElements <= 0) {
@@ -20,6 +23,11 @@ public class Network {
 				graph[i][j] = Boolean.FALSE;
 			}
 
+		}
+
+		connectedWith = new HashMap<Integer, Set<Integer>>();
+		for (int i = 1; i <= numberOfElements; i++) {
+			connectedWith.put(i, new HashSet<Integer>());
 		}
 	}
 
@@ -46,12 +54,9 @@ public class Network {
 	// This method should throw exceptions as appropriate.
 	public void connect(final Integer i, final Integer j) {
 		checkArguments(i, j);
-
-		if (j >= i) {
-			graph[i][j] = Boolean.TRUE;
-		} else {
-			graph[j][i] = Boolean.TRUE;
-		}
+		
+		graph[i][j] = Boolean.TRUE;
+		connectedWith.get(i).add(j);
 	}
 
 	// The second method, query will also take two integers and should also throw an
@@ -60,46 +65,33 @@ public class Network {
 	// directly or indirectly, and false if the elements are not connected.
 	public Boolean query(final Integer start, final Integer end) {
 		checkArguments(start, end);
-		
-		final Integer numberOfElements = numberOfElements();
 
-		List<Integer> visited = new ArrayList<Integer>();
-		List<Integer> inProcess = new ArrayList<Integer>();
-		inProcess.add(start);
+		if (isDirectlyConnected(start, end)) {
+			return Boolean.TRUE;
+		}
 
-		while (inProcess.size() > 0) {
-			int cur = inProcess.get(0);
-			inProcess.remove(0);
-			if (cur == end) {
-				return true;
+		try {
+			final Set<Integer> connections = connectedWith.get(start);
+			if (connections.isEmpty()) {
+				throw new NoConnectionException();
 			}
-			if (visited.contains(cur)) {
-				continue;
-			}
-			visited.add(cur);
-			for (int i = 1; i < numberOfElements; i++) {
-				final Boolean directlyConnected = isDirectlyConnected(cur, i);
-				final Boolean visitedContainsI = !visited.contains(i);
-				final Boolean inProcessDoesNotContainI = !inProcess.contains(i);
-				if (directlyConnected && visitedContainsI && inProcessDoesNotContainI) {
-					inProcess.add(i);
+
+			for (Integer someConnection : connections) {
+				if (query(someConnection, end)) {
+					return Boolean.TRUE;
 				}
 			}
+		} catch (NoConnectionException e) {
+			return Boolean.FALSE;
 		}
-		return false;
+		
+		return Boolean.FALSE;
 	}
 
 	public Boolean isDirectlyConnected(final Integer i, final Integer j) {
 		checkArguments(i, j);
 
-		Boolean directlyConnected = null;
-		if (j >= i) {
-			directlyConnected = graph[i][j];
-		} else {
-			directlyConnected = graph[j][i];
-		}
-
-		return directlyConnected;
+		return graph[i][j];
 	}
 
 	private void checkArguments(final Integer i, final Integer j) {
@@ -112,6 +104,14 @@ public class Network {
 		if (j < 1 || j > numberOfElements) {
 			throw new IllegalArgumentException();
 		}
+		
+		if(i > j) {
+			throw new IllegalArgumentException();
+		}
 	}
 
+	private class NoConnectionException extends Exception {
+		private static final long serialVersionUID = 7727039616625915172L;
+
+	}
 }
